@@ -1,0 +1,243 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Transaction
+{
+private:
+    string type;
+    double amount;
+
+public:
+    Transaction(string t, double a)
+    {
+        type = t;
+        amount = a;
+    }
+
+    void displayTransaction() const
+    {
+        cout << type << " : Rs. " << amount << endl;
+    }
+};
+
+class Account {
+
+private:
+    int accountNumber;
+    string accountType;
+    double balance;
+    vector<Transaction> transactions;
+
+public:
+    Account()
+    {
+        accountNumber = 0;
+        accountType = "";
+        balance = 0;
+    }
+    void createAccount()
+    {
+        cout << "Enter Account Number: ";
+        cin >> accountNumber;
+
+        cout << "Enter Account Type (Saving/Current): ";
+        cin >> accountType;
+
+        cout << "Enter Initial Balance: ";
+        cin >> balance;
+
+        transactions.push_back(Transaction("Initial Deposit", balance));
+    }
+
+    int getAccountNumber() const
+    {
+        return accountNumber;
+    }
+
+    double getBalance() const
+    {
+        return balance;
+    }
+
+    void deposit(double amount)
+    {
+        balance += amount;
+        transactions.push_back(Transaction("Deposit", amount));
+
+        cout << "Deposit Successful!" << endl;
+    }
+
+    void withdraw(double amount)
+    {
+        if (amount > balance)
+        {
+            cout << "Insufficient Balance!" << endl;
+            return;
+        }
+        balance -= amount;
+        transactions.push_back(Transaction("Withdrawal", amount));
+
+        cout << "Withdrawal Successful!" << endl;
+    }
+    bool transfer(Account &receiver, double amount)
+    {
+        if (amount > balance)
+        {
+            cout << "Insufficient Balance!" << endl;
+            return false;
+        }
+       balance -= amount;
+        receiver.balance += amount;
+
+        transactions.push_back(Transaction("Transfer Sent", amount));
+        receiver.transactions.push_back(Transaction("Transfer Received", amount));
+
+        cout << "Transfer Successful!" << endl;
+        return true;
+    }
+
+    void displayAccountInfo() const
+    {
+        cout << "\n----- Account Information -----" << endl;
+        cout << "Account Number : " << accountNumber << endl;
+        cout << "Account Type   : " << accountType << endl;
+        cout << "Balance        : Rs. " << balance << endl;
+    }
+
+    void showTransactions() const
+    {
+        cout << "\n----- Transaction History -----" << endl;
+
+        if (transactions.empty())
+        {
+            cout << "No transactions available." << endl;
+            return;
+        }
+
+        for (int i = 0; i < transactions.size(); i++)
+{
+    transactions[i].displayTransaction();
+}
+    }
+};
+class Customer
+{
+private:
+    int customerID;
+    string name;
+    string phone;
+    string address;
+
+public:
+    Account account;
+
+    void createCustomer()
+    {
+        cout << "Enter Customer ID: ";
+        cin >> customerID;
+
+        cin.ignore();
+
+        cout << "Enter Customer Name: ";
+        getline(cin, name);
+
+        cout << "Enter Phone Number: ";
+        getline(cin, phone);
+
+        cout << "Enter Address: ";
+        getline(cin, address);
+    }
+
+    void displayCustomerInfo() const
+    {
+        cout << "\n===== Customer Information =====" << endl;
+        cout << "Customer ID : " << customerID << endl;
+        cout << "Name        : " << name << endl;
+        cout << "Phone       : " << phone << endl;
+        cout << "Address     : " << address << endl;
+    }
+};
+
+int main()
+{
+    Customer customer1, customer2;
+
+    cout << "Create Customer 1" << endl;
+    customer1.createCustomer();
+    customer1.account.createAccount();
+
+    cout << "\nCreate Customer 2" << endl;
+    customer2.createCustomer();
+    customer2.account.createAccount();
+
+    int choice;
+    double amount;
+    do
+    {
+        cout << "\n========== BANKING SYSTEM ==========" << endl;
+        cout << "1. Deposit" << endl;
+        cout << "2. Withdraw" << endl;
+        cout << "3. Transfer Funds" << endl;
+        cout << "4. View Customer 1 Information" << endl;
+        cout << "5. View Customer 2 Information" << endl;
+        cout << "6. View Customer 1 Transactions" << endl;
+        cout << "7. View Customer 2 Transactions" << endl;
+        cout << "0. Exit" << endl;
+
+        cout << "\nEnter Choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter Deposit Amount: ";
+            cin >> amount;
+            customer1.account.deposit(amount);
+            break;
+
+        case 2:
+            cout << "Enter Withdrawal Amount: ";
+            cin >> amount;
+            customer1.account.withdraw(amount);
+            break;
+
+        case 3:
+            cout << "Enter Transfer Amount: ";
+            cin >> amount;
+            customer1.account.transfer(customer2.account, amount);
+            break;
+
+        case 4:
+            customer1.displayCustomerInfo();
+            customer1.account.displayAccountInfo();
+            break;
+
+        case 5:
+            customer2.displayCustomerInfo();
+            customer2.account.displayAccountInfo();
+            break;
+
+        case 6:
+            customer1.account.showTransactions();
+            break;
+
+        case 7:
+            customer2.account.showTransactions();
+            break;
+
+        case 0:
+            cout << "Thank You for Using the Banking System!" << endl;
+            break;
+
+        default:
+            cout << "Invalid Choice!" << endl;
+        }
+
+    } 
+    while (choice != 0);
+
+    return 0;
+}
+
